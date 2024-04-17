@@ -1,0 +1,29 @@
+﻿
+function	script	ph_strrepeat	{
+	// 检查传入参数的个数
+	if (getargcount() != 2) {
+		return "";
+	}
+
+	// 将传入的第一个参数作为: 需被重复的字符串
+	.@text$ = "" + getarg(0);
+	
+	// 将传入的第二个参数作为: 重复次数
+	.@repeat_count = getarg(1,0);
+	
+	// 若没有指定重复次数, 也不用处理直接返回
+	if (0 == .@repeat_count) {
+		return .@text$;
+	}
+	
+	// 初始化一个用来保存处理结果的字符串变量
+	.@result$ = "";
+	
+	// 循环输出字符串
+	for (.@i = 0; .@i < .@repeat_count; .@i++) {
+		.@result$ += .@text$;
+	}
+	
+	// 将最终处理完毕的结果返回
+	return .@result$;
+}

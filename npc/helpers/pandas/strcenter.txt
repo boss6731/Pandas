@@ -1,0 +1,81 @@
+﻿
+function	script	ph_strcenter	{
+	// 检查传入参数的个数, 仅接受 2~4 个参数
+	if (getargcount() < 2 && getargcount() > 4) {
+		return "";
+	}
+
+	// 将传入的第一个参数作为: 待居中文本
+	.@text$ = "" + getarg(0);
+	
+	// 将传入的第二个参数作为: 期望的宽度
+	.@width = getarg(1,0);
+	
+	// 将传入的第三个参数作为: 占位字符 (前提是第三个参数被传参, 否则默认为等于号)
+	.@placeholder$ = "=";
+	if (getargcount() >= 3) {
+		.@placeholder$ = getarg(2);
+	}
+	
+	// 将传入的第四个参数作为: 是否空格留白
+	.@need_space = true;
+	if (getargcount() == 4) {
+		.@need_space = getarg(3);
+	}
+	
+	// 检查占位符是否为单个字符, 不是则强制恢复成等于号
+	if (getstrlen(.@placeholder$) != 1) {
+		.@placeholder$ = "=";
+	}
+	
+	// 如若希望空格留白, 则待居中文本的左右加个空格
+	if (.@need_space) {
+		.@text$ = " " + .@text$ + " ";
+	}
+	
+	// 计算待居中文本的字符串长度 (字节数: 一个汉字占 2 个字节)
+	.@textlen = getstrlen(.@text$);
+	
+	// 若文本长度已经 >= 期望的宽度, 则不用处理直接返回
+	if (.@textlen >= .@width) {
+		return .@text$;
+	}
+	
+	// 若没有指定期望的宽度, 也不用处理直接返回
+	if (0 == .@width) {
+		return .@text$;
+	}
+	
+	// 计算文本长度与期望的宽度之间差多少个字符
+	.@gap = .@width - .@textlen;
+	
+	// 初始化左右两侧需要补充的占位符数量
+	.@padding_left = 0;
+	.@padding_right = 0;
+	
+	// 若差距可以被 2 整除, 那么我们认为需要在左右两侧补充相同的占位符
+	if (0 == .@gap % 2) {
+		.@padding_left = .@padding_right = .@gap / 2;
+	}
+	else {
+		.@padding_left = .@padding_right = .@gap / 2;
+		
+		// 此时会有 1 个多余的空闲位置, 我们将它放在右侧
+		.@padding_right += 1;
+	}
+	
+	// 初始化一个用来保存处理结果的字符串变量
+	.@result$ = "";
+	
+	// 先把左侧的占位符填上
+	.@result$ += ph_strrepeat(.@placeholder$, .@padding_left);
+	
+	// 把待居中文本拼接上
+	.@result$ += .@text$;
+	
+	// 最后把右侧的占位符填上
+	.@result$ += ph_strrepeat(.@placeholder$, .@padding_right);
+	
+	// 将最终处理完毕的结果返回
+	return .@result$;
+}
